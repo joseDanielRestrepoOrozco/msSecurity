@@ -1,7 +1,7 @@
 package com.mssecurity.mssecurity.Repositories;
 
-import com.mssecurity.mssecurity.Models.Role;
+import com.mssecurity.mssecurity.Models.Permission;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface PermissionRepository extends MongoRepository<Role, String> {
+public interface PermissionRepository extends MongoRepository<Permission, String> {
 }
