@@ -1,6 +1,8 @@
 package com.mssecurity.mssecurity.Controllers;
 
+import com.mssecurity.mssecurity.Models.Role;
 import com.mssecurity.mssecurity.Models.User;
+import com.mssecurity.mssecurity.Repositories.RoleRepository;
 import com.mssecurity.mssecurity.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ public class UserController {
 
     @Autowired
     private UserRepository theUserRepository;
+
+    @Autowired
+    private RoleRepository theRoleRepository;
 
     @GetMapping("")
     public List<User> index(){
@@ -53,4 +58,37 @@ public class UserController {
         }
     }
 
+    /**
+     * asocia el role con el usuario
+     * @param user_id identificador del usuario
+     * @param role_id identificador del role
+     * @return guarda los cambios del usuario en la base de datos
+     */
+    @PutMapping("{user_id}/role/{role_id}")
+    public User matchUserRole(@PathVariable String user_id, @PathVariable String role_id){
+        User theActualUser = this.theUserRepository.findById(user_id).orElse(null);
+        Role theActualRole = this.theRoleRepository.findById(role_id).orElse(null);
+        if (theActualUser != null && theActualRole != null){
+            theActualUser.setRole(theActualRole);
+            return this.theUserRepository.save(theActualUser);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * desasocia el role con el usuario
+     * @param user_id identificador del usuario
+     * @return guarda los cambios en la base de datos
+     */
+    @DeleteMapping("{user_id}/role")
+    public User unMatchUserRole(@PathVariable String user_id){
+        User theActualUser = this.theUserRepository.findById(user_id).orElse(null);
+        if (theActualUser != null){
+            theActualUser.setRole(null);
+            return this.theUserRepository.save(theActualUser);
+        } else {
+            return null;
+        }
+    }
 }
