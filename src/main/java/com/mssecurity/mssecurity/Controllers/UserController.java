@@ -4,6 +4,7 @@ import com.mssecurity.mssecurity.Models.Role;
 import com.mssecurity.mssecurity.Models.User;
 import com.mssecurity.mssecurity.Repositories.RoleRepository;
 import com.mssecurity.mssecurity.Repositories.UserRepository;
+import com.mssecurity.mssecurity.Services.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,9 @@ public class UserController {
     @Autowired
     private RoleRepository theRoleRepository;
 
+    @Autowired
+    private EncryptionService encryptionService;
+
     @GetMapping("")
     public List<User> index(){
         return  this.theUserRepository.findAll();
@@ -31,7 +35,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User store(@RequestBody User newUser){
-        newUser.setPassword(this.convertirSHA256(newUser.getPassword()));
+        newUser.setPassword(encryptionService.convertirSHA256(newUser.getPassword()));
         return this.theUserRepository.save(newUser);
     }
 
@@ -47,7 +51,7 @@ public class UserController {
             theActualUser.setName(theNewUser.getName());
             theActualUser.setEmail(theNewUser.getEmail());
             theActualUser
-                    .setPassword(this.convertirSHA256(theNewUser.getPassword()));
+                    .setPassword(encryptionService.convertirSHA256(theNewUser.getPassword()));
             return this.theUserRepository.save(theActualUser);
         }
         return null;
@@ -94,22 +98,5 @@ public class UserController {
         } else {
             return null;
         }
-    }
-
-    public String convertirSHA256(String password) {
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-        byte[] hash = md.digest(password.getBytes());
-        StringBuffer sb = new StringBuffer();
-        for(byte b : hash) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 }
