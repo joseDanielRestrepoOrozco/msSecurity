@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @CrossOrigin
@@ -29,6 +31,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User store(@RequestBody User newUser){
+        newUser.setPassword(this.convertirSHA256(newUser.getPassword()));
         return this.theUserRepository.save(newUser);
     }
 
@@ -38,12 +41,13 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public User update(@PathVariable String id, @RequestBody User newUser){
+    public User update(@PathVariable String id, @RequestBody User theNewUser){
         User theActualUser = this.theUserRepository.findById(id).orElse(null);
         if (theActualUser != null){
-            theActualUser.setName(newUser.getName());
-            theActualUser.setEmail(newUser.getEmail());
-            theActualUser.setPassword(newUser.getPassword());
+            theActualUser.setName(theNewUser.getName());
+            theActualUser.setEmail(theNewUser.getEmail());
+            theActualUser
+                    .setPassword(this.convertirSHA256(theNewUser.getPassword()));
             return this.theUserRepository.save(theActualUser);
         }
         return null;
@@ -90,5 +94,22 @@ public class UserController {
         } else {
             return null;
         }
+    }
+
+    public String convertirSHA256(String password) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+        byte[] hash = md.digest(password.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for(byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }
