@@ -4,7 +4,7 @@ import com.mssecurity.mssecurity.Models.User;
 import com.mssecurity.mssecurity.Repositories.UserRepository;
 import com.mssecurity.mssecurity.Services.EncryptionService;
 import com.mssecurity.mssecurity.Services.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("security")
+@RequestMapping("api/public/security")
 public class SecurityController {
 
     @Autowired

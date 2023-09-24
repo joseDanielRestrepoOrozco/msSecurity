@@ -46,17 +46,17 @@ public class JwtService {
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
-// Verifica la expiración del token
+            // Verifica la expiración del token
             Date now = new Date();
             if (claimsJws.getBody().getExpiration().before(now)) {
                 return false;
             }
             return true;
         } catch (SignatureException ex) {
-// La firma del token es inválida
+            // La firma del token es inválida
             return false;
         } catch (Exception e) {
-// Otra excepción
+            // Otra excepción
             return false;
         }
     }
