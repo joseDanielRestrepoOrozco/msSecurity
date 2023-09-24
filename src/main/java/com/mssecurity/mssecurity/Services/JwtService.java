@@ -60,4 +60,20 @@ public class JwtService {
             return false;
         }
     }
+
+    public User getUserFromToken(String token){
+        try{
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+
+            Claims claims = claimsJws.getBody();
+
+            User user = new User();
+            user.set_id((String) claims.get("_id"));
+            user.setName((String) claims.get("name"));
+            user.setEmail((String) claims.get("email"));
+            return user;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

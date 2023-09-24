@@ -12,9 +12,9 @@ public class RolePermission {
     @Id
     private String _id;
     @DBRef
-    private Permission permission;
-    @DBRef
     private Role role;
+    @DBRef
+    private Permission permission;
 
     public RolePermission() {}
 
